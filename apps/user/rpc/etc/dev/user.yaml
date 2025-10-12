@@ -4,3 +4,16 @@ Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: user.rpc
+
+Mysql:
+  DataSource: root:123456@tcp(127.0.0.1:13306)/sai-im?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+Cache:
+  - Host: 127.0.0.1:16379
+    Type: node
+    Pass: sai-im
+
+Jwt:
+  AccessSecret: sai-im
+  AccessExpire: 864000 # 100天后过期
+

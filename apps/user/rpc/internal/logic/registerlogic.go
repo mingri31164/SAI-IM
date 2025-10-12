@@ -2,11 +2,19 @@ package logic
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"SAI-IM/apps/user/rpc/internal/svc"
+	"SAI-IM/apps/user/rpc/models"
 	"SAI-IM/apps/user/rpc/user"
+	"SAI-IM/pkg/ctxdata"
+	"SAI-IM/pkg/encrypy"
+	"SAI-IM/pkg/suid"
+	"SAI-IM/pkg/utils"
+	"SAI-IM/pkg/xerr"
 )
 
 type RegisterLogic struct {
@@ -24,7 +32,50 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, error) {
-	// TODO 用户注册，添加默认密码，注册时无需输入密码
+	u := models.User{}
+	var err error
+	// 1.检查用户是否存在(phone)
+	err = l.svcCtx.CSvc.GetUserByPhone(&u, in.Phone)
+	if err != nil {
+		if u.ID == "" {
+			return nil, errors.WithStack(xerr.PhoneNotFound)
+		}
+		return nil, errors.Wrapf(xerr.NewDBErr(), "find api by phone "+
+			" err %v req %v", err, in.Phone)
+	}
 
-	return &user.RegisterResp{}, nil
+	// 2.定义新增用户
+	U := &models.User{
+		ID:       suid.GenerateID(),
+		Avatar:   in.Avatar,
+		Nickname: in.Nickname,
+		Phone:    in.Phone,
+		Status:   utils.ConvertToInt8(0),
+		Sex:      utils.ConvertToInt8(in.Sex),
+	}
+
+	if in.Password != "" {
+		pass, err := encrypy.GenPasswordHash([]byte(in.Password))
+		if err != nil {
+			return nil, errors.Wrapf(xerr.NewServerCommonErr(), "passwordHash gen err %v", err)
+		}
+		U.Password = string(pass)
+	}
+	// 3.保存用户
+	err = l.svcCtx.CSvc.CreateUser(U)
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewDBErr(), "save api %v failed ,err %v", in, err)
+	}
+
+	// 4. 生成token
+	now := time.Now().Unix()
+	token, err := ctxdata.GetJwtToken(l.svcCtx.Config.Jwt.AccessSecret, now, l.svcCtx.Config.Jwt.AccessExpire, u.ID)
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewDBErr(), "extdata get jwt token"+
+			" err %v", in.Phone)
+	}
+	return &user.RegisterResp{
+		Token:  token,
+		Expire: now + l.svcCtx.Config.Jwt.AccessExpire,
+	}, nil
 }

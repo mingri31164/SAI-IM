@@ -1,7 +1,10 @@
 package logic
 
 import (
+	"SAI-IM/apps/user/rpc/models"
+	"SAI-IM/pkg/xerr"
 	"context"
+	"github.com/pkg/errors"
 
 	"SAI-IM/apps/user/rpc/internal/svc"
 	"SAI-IM/apps/user/rpc/user"
@@ -24,7 +27,27 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserInfoLogic) GetUserInfo(in *user.GetUserInfoReq) (*user.GetUserInfoResp, error) {
-	// todo: add your logic here and delete this line
+	u := make([]models.User, 0, 1)
+	s := make([]string, 1)
+	s[0] = in.User
+	var userEntity user.UserEntity
+	err := l.svcCtx.CSvc.GetUserByIds(&u, s)
+	ur := u[0]
+	if err != nil {
+		if ur.ID == "" {
+			return nil, errors.WithStack(xerr.IdNotFound)
+		}
+		return nil, errors.Wrapf(xerr.NewDBErr(), "find api by id "+
+			" err %v req %v", err, in.User)
+	}
 
-	return &user.GetUserInfoResp{}, nil
+	userEntity = user.UserEntity{
+		Id:       ur.ID,
+		Avatar:   ur.Avatar,
+		Nickname: ur.Nickname,
+		Phone:    ur.Phone,
+		Status:   int32(*ur.Status),
+		Sex:      int32(*ur.Sex),
+	}
+	return &user.GetUserInfoResp{User: &userEntity}, nil
 }

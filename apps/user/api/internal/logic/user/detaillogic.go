@@ -1,7 +1,10 @@
 package user
 
 import (
+	"SAI-IM/apps/user/rpc/user"
+	"SAI-IM/pkg/ctxdata"
 	"context"
+	"github.com/jinzhu/copier"
 
 	"SAI-IM/apps/user/api/internal/svc"
 	"SAI-IM/apps/user/api/internal/types"
@@ -15,7 +18,6 @@ type DetailLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
-// 获取用户信息
 func NewDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DetailLogic {
 	return &DetailLogic{
 		Logger: logx.WithContext(ctx),
@@ -27,5 +29,17 @@ func NewDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DetailLogi
 func (l *DetailLogic) Detail(req *types.UserInfoReq) (resp *types.UserInfoResp, err error) {
 	// todo: add your logic here and delete this line
 
-	return
+	uid := ctxdata.GetUId(l.ctx)
+
+	userInfoResp, err := l.svcCtx.User.GetUserInfo(l.ctx, &user.GetUserInfoReq{
+		Id: uid,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var res types.User
+	copier.Copy(&res, userInfoResp.User)
+
+	return &types.UserInfoResp{Info: res}, nil
 }

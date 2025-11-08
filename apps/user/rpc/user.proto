@@ -5,67 +5,73 @@ package user;
 option go_package = "./user";
 
 // model
-message UserEntity{
-  string id = 1;   // 用户ID
-  string avatar = 2 ;  // 用户头像
-  string nickname = 3;  // 昵称
-  string phone = 4; // 手机号码
-  int32 status =5 ; // 是否锁住
-  int32 sex = 6; // 性别
+message UserEntity {
+  string  id = 1;                // 用户id
+  string  avatar = 2;            // 用户头像
+  string  nickname = 3;          // 昵称
+  string  phone  = 4;            // 手机号码
+  int32   status  = 5;           // 是否锁住
+  int32   sex = 6;
 }
-// req与resp
-message Request{
+
+// req 与 resp
+message Request {
   string ping = 1;
 }
-message Response{
+
+message Response {
   string pong = 1;
 }
 
-message LoginReq{
-  string phone =1;
-  string password = 2;
+message LoginReq {
+  string  phone = 1;
+  string  password = 2;
 }
 
-message LoginResp{
-  string id = 3;
+message LoginResp {
   string Token = 1;
   int64 expire = 2;
 }
 
 message RegisterReq{
-  string phone = 1;
-  string password = 3;
-  string nickname = 2;
-  string avatar = 4;
-  int32 sex =5;
+  string  phone = 1;
+  string  nickname = 2;
+  string  password = 3;
+  string  avatar = 4;
+  int32   sex = 5;
 }
 
-message RegisterResp{
+message RegisterResp {
   string Token = 1;
   int64 expire = 2;
 }
 
-message GetUserInfoReq{
-  string user = 1;
+message GetUserInfoReq {
+  string id = 1;
 }
 
-message GetUserInfoResp{
+message GetUserInfoResp {
   UserEntity user = 1;
 }
 
-message FindUserReq{
-  string name =1;
-  string phone =2;
-  repeated string ids =3 ;
-}
-message FindUserResp{
-  repeated UserEntity users = 1;
+message FindUserReq {
+  string name = 1;
+  string phone = 2;
+  repeated string ids = 3;
 }
 
-service User{
-  rpc Ping(Request) returns(Response);
-  rpc Login(LoginReq) returns(LoginResp);
-  rpc Register(RegisterReq) returns(RegisterResp);
-  rpc GetUserInfo(GetUserInfoReq) returns(GetUserInfoResp);
-  rpc FindUser(FindUserReq) returns(FindUserResp);
+message FindUserResp {
+  repeated UserEntity user = 1;
+}
+
+service User {
+  rpc Ping(Request) returns (Response);
+
+  rpc Login(LoginReq) returns (LoginResp);
+
+  rpc Register(RegisterReq) returns (RegisterResp);
+
+  rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoResp);
+
+  rpc FindUser(FindUserReq) returns (FindUserResp);
 }

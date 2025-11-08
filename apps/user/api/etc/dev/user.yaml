@@ -1,16 +1,13 @@
 Name: user
 Host: 0.0.0.0
-Port: 8880
+Port: 8888
+
 UserRpc:
   Etcd:
     Hosts:
-      - 118.178.120.11:3379
+      - 192.168.117.24:3379
     Key: user.rpc
 
-Redisx:
-  Host: 118.178.120.11:16379
-  Pass: easy-chat
-
 JwtAuth:
-  AccessSecret: easy-chat
-  AccessExpire: 864000
+  AccessSecret: mingri
+  AccessExpire: 8640000

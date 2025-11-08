@@ -1,7 +1,9 @@
 package user
 
 import (
+	"SAI-IM/apps/user/rpc/user"
 	"context"
+	"github.com/jinzhu/copier"
 
 	"SAI-IM/apps/user/api/internal/svc"
 	"SAI-IM/apps/user/api/internal/types"
@@ -15,7 +17,6 @@ type RegisterLogic struct {
 	svcCtx *svc.ServiceContext
 }
 
-// 用户注册
 func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *RegisterLogic {
 	return &RegisterLogic{
 		Logger: logx.WithContext(ctx),
@@ -27,5 +28,19 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
 	// todo: add your logic here and delete this line
 
-	return
+	registerResp, err := l.svcCtx.User.Register(l.ctx, &user.RegisterReq{
+		Phone:    req.Phone,
+		Nickname: req.Nickname,
+		Password: req.Password,
+		Avatar:   req.Avatar,
+		Sex:      int32(req.Sex),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var res types.RegisterResp
+	copier.Copy(&res, registerResp)
+
+	return &res, nil
 }

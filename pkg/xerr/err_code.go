@@ -1,7 +1,7 @@
 package xerr
 
 const (
-	ServerCommonError = 10001
-	RequestParamError = 10002
-	DbError           = 10003
+	SERVER_COMMON_ERROR = 100001
+	REQUEST_PARAM_ERROR = 100002
+	DB_ERROR            = 100003
 )

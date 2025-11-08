@@ -1,10 +1,9 @@
 package logic
 
 import (
-	"context"
-
 	"SAI-IM/apps/user/rpc/internal/svc"
 	"SAI-IM/apps/user/rpc/user"
+	"context"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -25,6 +24,7 @@ func NewPingLogic(ctx context.Context, svcCtx *svc.ServiceContext) *PingLogic {
 
 func (l *PingLogic) Ping(in *user.Request) (*user.Response, error) {
 	// todo: add your logic here and delete this line
+
 	return &user.Response{
 		Pong: "baidu.com",
 	}, nil

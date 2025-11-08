@@ -1,0 +1,14 @@
+Name: social.rpc
+ListenOn: 127.0.0.1:10001
+Etcd:
+  Hosts:
+    - 192.168.117.24:3379
+  Key: social.rpc
+
+Mysql:
+  DataSource: root:sai-im@tcp(192.168.117.24:13306)/sai-im?charset=utf8mb4&parseTime=true
+
+Cache:
+  - Host: 192.168.117.24:16379
+    Type: node
+    Pass: sai-im

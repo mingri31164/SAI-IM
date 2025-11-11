@@ -12,9 +12,11 @@ import (
 
 type Server struct {
 	sync.RWMutex
+	opt *serverOption
 
 	routes         map[string]HandlerFunc
 	addr           string
+	patten         string
 	connToUser     map[*websocket.Conn]string
 	userToConn     map[string]*websocket.Conn
 	upgrader       websocket.Upgrader
@@ -22,10 +24,14 @@ type Server struct {
 	logx.Logger
 }
 
-func NewServer(addr string) *Server {
+func NewServer(addr string, opts ...ServerOption) *Server {
+	opt := newOption(opts...)
+
 	return &Server{
 		routes:         make(map[string]HandlerFunc),
+		opt:            &opt,
 		addr:           addr,
+		patten:         opt.patten,
 		connToUser:     make(map[*websocket.Conn]string),
 		userToConn:     make(map[string]*websocket.Conn),
 		upgrader:       websocket.Upgrader{},
@@ -48,6 +54,15 @@ func (s *Server) ServerWs(w http.ResponseWriter, r *http.Request) {
 		s.Errorf("upgrade err %v", err)
 		return
 	}
+
+	if !s.authentication.Auth(w, r) {
+		conn.WriteMessage(websocket.TextMessage, []byte(fmt.Sprint("不具备访问权限")))
+		conn.Close()
+		return
+	}
+
+	// 记录连接
+	s.addConn(conn, r)
 
 	// 根据连接对象获取请求，根据请求查找路由并执行
 	go s.handlerConn(conn)
@@ -187,7 +202,7 @@ func (s *Server) AddRoutes(rs []Route) {
 }
 
 func (s *Server) Start() {
-	http.HandleFunc("/ws", s.ServerWs)
+	http.HandleFunc(s.patten, s.ServerWs)
 	s.Info(http.ListenAndServe(s.addr, nil))
 }
 

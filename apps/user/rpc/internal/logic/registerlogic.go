@@ -53,9 +53,10 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 		Avatar:   in.Avatar,
 		Nickname: in.Nickname,
 		Phone:    in.Phone,
+		// 通过构造sql空对象插入数据库中
 		Sex: sql.NullInt64{
 			Int64: int64(in.Sex),
-			Valid: true,
+			Valid: true, // 是否写入数据库
 		},
 	}
 
@@ -64,6 +65,7 @@ func (l *RegisterLogic) Register(in *user.RegisterReq) (*user.RegisterResp, erro
 		if err != nil {
 			return nil, err
 		}
+		// 通过构造sql空对象插入数据库中
 		userEntity.Password = sql.NullString{
 			String: string(genPassword),
 			Valid:  true,

@@ -130,7 +130,7 @@ func (m *defaultFriendsModel) Inserts(ctx context.Context, session sqlx.Session,
 		return nil, nil
 	}
 
-	// insert into tablename values(数据), (数据)
+	// insert into tablename values(数据1), (数据2)
 	sql.WriteString(fmt.Sprintf("insert into %s (%s) values ", m.table, friendsRowsExpectAutoSet))
 
 	for i, v := range data {

@@ -61,6 +61,12 @@ func newFriendRequestsModel(conn sqlx.SqlConn, c cache.CacheConf) *defaultFriend
 	}
 }
 
+/*
+*
+
+		定义Trans方法开启事务处理（重点在于session）
+	    在调用上方newFriendRequestsModel函数时，会自动调用该方法开启事务
+*/
 func (m *defaultFriendRequestsModel) Trans(ctx context.Context, fn func(ctx context.Context,
 	session sqlx.Session) error) error {
 	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
@@ -137,6 +143,7 @@ func (m *defaultFriendRequestsModel) Update(ctx context.Context, session sqlx.Se
 	friendRequestsIdKey := fmt.Sprintf("%s%v", cacheFriendRequestsIdPrefix, data.Id)
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, friendRequestsRowsWithPlaceHolder)
+		// 此处将conn替换为传入的session表示使用事务
 		return session.ExecCtx(ctx, query, data.UserId, data.ReqUid, data.ReqMsg, data.ReqTime, data.HandleResult, data.HandleMsg, data.HandledAt, data.Id)
 	}, friendRequestsIdKey)
 	return err

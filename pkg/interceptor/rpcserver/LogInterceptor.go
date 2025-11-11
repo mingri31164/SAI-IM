@@ -20,6 +20,7 @@ func LogInterceptor(ctx context.Context, req any, info *grpc.UnaryServerInfo, ha
 	logx.WithContext(ctx).Errorf("【RPC SRV ERR】 %v", err)
 
 	causeErr := errors.Cause(err)
+	// 判断是不是我们自定义的错误对象
 	if e, ok := causeErr.(*zerr.CodeMsg); ok {
 		err = status.Error(codes.Code(e.Code), e.Msg)
 	}

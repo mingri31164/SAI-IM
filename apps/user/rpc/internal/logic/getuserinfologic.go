@@ -39,6 +39,7 @@ func (l *GetUserInfoLogic) GetUserInfo(in *user.GetUserInfoReq) (*user.GetUserIn
 		return nil, err
 	}
 	var resp user.UserEntity
+	// 使用一个将结构体转化成另一个结构体的组件
 	copier.Copy(&resp, userEntiy)
 
 	return &user.GetUserInfoResp{

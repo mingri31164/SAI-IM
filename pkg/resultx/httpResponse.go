@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
-	zrpcErr "github.com/zeromicro/x/errors"
+	zrpcErr "github.com/zeromicro/x/errors" // 包名与errors重复冲突，需自定义
 	"google.golang.org/grpc/status"
 	"net/http"
 
@@ -47,6 +47,7 @@ func ErrHandler(name string) func(ctx context.Context, err error) (int, any) {
 			errcode = e.Code
 			errmsg = e.Msg
 		} else {
+			// 在拦截器中已经将错误设置到了grpc的响应结构中，所以这里从gstatus获取并设置
 			if gstatus, ok := status.FromError(causeErr); ok {
 				errcode = int(gstatus.Code())
 				errmsg = gstatus.Message()

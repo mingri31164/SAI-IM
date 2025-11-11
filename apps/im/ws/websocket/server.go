@@ -144,6 +144,42 @@ func (s *Server) handlerConn(conn *websocket.Conn) {
 	}
 }
 
+/*
+这里的 ...string 表示：
+这个函数的参数 sendIds 是一个“可变数量的 string 参数”。
+*/
+func (s *Server) SendByUserId(msg interface{}, sendIds ...string) error {
+	if len(sendIds) == 0 {
+		return nil
+	}
+	/*
+		Go 里的 ... 在调用函数时有一个反向功能：
+		如果一个函数接收可变参数，而你已经有一个切片（比如 []string），
+		想把切片里的每个元素当作独立参数传进去，就需要加上 ... 展开操作符。
+	*/
+	return s.Send(msg, s.GetConns(sendIds...)...)
+}
+
+// 根据连接对象执行任务处理
+func (s *Server) Send(msg interface{}, conns ...*websocket.Conn) error {
+	if len(conns) == 0 {
+		return nil
+	}
+
+	data, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
+	for _, conn := range conns {
+		if err := conn.WriteMessage(websocket.TextMessage, data); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func (s *Server) AddRoutes(rs []Route) {
 	for _, r := range rs {
 		s.routes[r.Method] = r.Handler

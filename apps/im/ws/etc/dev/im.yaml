@@ -1,0 +1,14 @@
+Name: im.ws
+ListenOn: 0.0.0.0:10090
+
+JwtAuth:
+  AccessSecret: mingri
+
+Mongo:
+  Url: "mongodb://root:sai-im@192.168.117.24:47017"
+  Db: sai-im
+
+MsgChatTransfer:
+  Topic: msgChatTransfer
+  Addrs:
+    - 192.168.117.24:9092

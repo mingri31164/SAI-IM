@@ -161,7 +161,7 @@ package handler
   
 import (  
     "context"  
-    "easy-chat/apps/im/ws/internal/svc"    "easy-chat/pkg/ctxdata"    "github.com/golang-jwt/jwt/v4"    "github.com/zeromicro/go-zero/core/logx"    "github.com/zeromicro/go-zero/rest/token"    "net/http")  
+    "sai-im/apps/im/ws/internal/svc"    "sai-im/pkg/ctxdata"    "github.com/golang-jwt/jwt/v4"    "github.com/zeromicro/go-zero/core/logx"    "github.com/zeromicro/go-zero/rest/token"    "net/http")  
   
 type JwtAuth struct {  
     svc    *svc.ServiceContext  

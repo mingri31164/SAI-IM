@@ -210,17 +210,17 @@ func (s *Server) Stop() {
 	fmt.Println("停止服务")
 }
 
-func (s *Server) Close(conn *websocket.Conn) {
+func (s *Server) Close(conn *Conn) {
 	s.RWMutex.Lock()
 	defer s.RWMutex.Unlock()
 
-	uid := s.connToUser[conn]
+	uid := s.connToUser[conn.Conn]
 	if uid == "" {
 		// 已经被关闭
 		return
 	}
 
-	delete(s.connToUser, conn)
+	delete(s.connToUser, conn.Conn)
 	delete(s.userToConn, uid)
 
 	err := conn.Close()

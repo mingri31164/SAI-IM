@@ -30,7 +30,7 @@ func NewConn(s *Server, w http.ResponseWriter, r *http.Request) *Conn {
 		Conn:              c,
 		s:                 s,
 		idle:              time.Now(),
-		maxConnectionIdle: defaultMaxConnectionIdle,
+		maxConnectionIdle: s.opt.maxConnectionIdle,
 		done:              make(chan struct{}),
 	}
 

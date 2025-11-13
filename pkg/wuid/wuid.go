@@ -41,5 +41,6 @@ func CombineId(aid, bid string) string {
 		return a < b
 	})
 
+	// 按照序号大小顺序拼接 会话id
 	return fmt.Sprintf("%s_%s", ids[0], ids[1])
 }

@@ -138,6 +138,9 @@ func (s *Server) GetUsers(conns ...*Conn) []string {
 // 根据连接对象执行任务处理
 func (s *Server) handlerConn(conn *Conn) {
 
+	uids := s.GetUsers(conn)
+	conn.Uid = uids[0]
+
 	for {
 		// 获取请求消息
 		_, msg, err := conn.ReadMessage()

@@ -1,0 +1,24 @@
+Name: task.mq
+ListenOn: 0.0.0.0:10091
+
+# kafka消费者信息
+MsgChatTransfer:
+  Name: MsgChatTransfer
+  Brokers:
+    - 192.168.117.24:9092
+  Group: kafka
+  Topic: msgChatTransfer
+  Offset: first
+  Consumers: 1
+
+Redisx:
+  Host: 192.168.117.24:16379
+  Type: node
+  Pass: sai-im
+
+Mongo:
+  Url: "mongodb://root:sai-im@192.168.117.24:47017"
+  Db: sai-im
+
+Ws:
+  Host: 127.0.0.1:10090

@@ -19,7 +19,7 @@ type (
 	}
 )
 
-// NewFriendsModel returns a model for the database table.
+// NewFriendsModel returns a models for the database table.
 func NewFriendsModel(conn sqlx.SqlConn, c cache.CacheConf) FriendsModel {
 	return &customFriendsModel{
 		defaultFriendsModel: newFriendsModel(conn, c),

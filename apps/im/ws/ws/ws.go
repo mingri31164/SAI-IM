@@ -6,6 +6,7 @@ import "SAI-IM/pkg/constants"
 
 // ✨细节点：mapstructure用于将message中data进行json转换后的
 // map[string]interface{}类型转换为我们所需要的类型
+// 在conversation中通过mapstructure.Decode()方法进行转换
 type (
 	// chat中具体的消息格式
 	Msg struct {

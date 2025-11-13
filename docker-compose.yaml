@@ -48,6 +48,21 @@ services:
     networks:
       sai-im:
 
+  mongo:
+    image: mongo:4.0
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: sai-im
+    ports:
+      - 47017:27017
+    volumes:
+      - ./components/mongo/data:/data/db
+      - /etc/localtime:/etc/localtime
+    restart: always
+    networks:
+      sai-im:
+
 networks:
   sai-im:
     driver: bridge

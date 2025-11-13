@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"SAI-IM/apps/im/ws/internal/handler/conversation"
 	"SAI-IM/apps/im/ws/internal/handler/user"
 	"SAI-IM/apps/im/ws/internal/svc"
 	"SAI-IM/apps/im/ws/websocket"
@@ -12,6 +13,10 @@ func RegisterHandlers(srv *websocket.Server, svc *svc.ServiceContext) {
 		{
 			Method:  "user.online",
 			Handler: user.OnLine(svc),
+		},
+		{
+			Method:  "conversation.chat",
+			Handler: conversation.Chat(svc),
 		},
 	})
 }

@@ -26,6 +26,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	srv := websocket.NewServer(c.ListenOn,
 		websocket.WithAuthentication(handler.NewJwtAuth(ctx)),
+		// 调试时可先注释心跳检测
 		websocket.WithServerMaxConnectionIdle(10*time.Second),
 	)
 	defer srv.Stop()

@@ -63,6 +63,42 @@ services:
     networks:
       sai-im:
 
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - 2181:2181
+    container_name: zookeeper
+    volumes:
+      - /etc/localtime:/etc/localtime
+    environment:
+      TZ: Asia/Shanghai
+    restart: always
+    networks:
+      sai-im:
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    restart: always
+    ports:
+      - 9092:9092
+    environment:
+      TZ: Asia/Shanghai
+      KAFKA_BROKER_ID: 0
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "ws2ms_chat:8:1,ms2ps_chat:8:1,msg_to_mongo:8:1"
+      #✨注意：填写的是当前宿主机的ip，即对外能够访问到Kafka的地址
+      # 这是因为 ：在go-zero的消息队列组件中，默认监听的是本机的ip，即本机不能访问外网
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://192.168.117.24:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_LISTENERS: INSIDE://:9092
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
+    depends_on:
+      - zookeeper
+    networks:
+      sai-im:
+
 networks:
   sai-im:
     driver: bridge

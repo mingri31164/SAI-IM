@@ -19,8 +19,9 @@ func NewMsgChatTransfer(svc *svc.ServiceContext) *MsgChatTransfer {
 	}
 }
 
-// ✨实现 kq -> queue 中的Consume接口
-func (m *MsgChatTransfer) Consume(key, value string) error {
+// Consume ✨实现 kq -> queue 中的Consume接口
+// 不同于v1.1.8, v1.2.2中，Consume接口的参数中新增了一个参数ctx
+func (m *MsgChatTransfer) Consume(ctx context.Context, key, value string) error {
 	fmt.Println("key : ", key, " value : ", value)
 	return nil
 }

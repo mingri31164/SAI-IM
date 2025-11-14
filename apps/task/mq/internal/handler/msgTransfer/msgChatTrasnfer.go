@@ -30,6 +30,7 @@ func (m *MsgChatTransfer) Consume(ctx context.Context, key, value string) error 
 	fmt.Println("key : ", key, " value : ", value)
 	var (
 		data mq.MsgChatTransfer
+		//ctx  = context.Background()
 	)
 	if err := json.Unmarshal([]byte(value), &data); err != nil {
 		return err

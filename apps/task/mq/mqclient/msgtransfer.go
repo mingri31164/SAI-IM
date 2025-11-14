@@ -9,7 +9,7 @@ import (
 
 // 定义对于聊天消息转化的会话客户端，提供给websocket服务进行使用
 type MsgChatTransferClient interface {
-	Push(ctx context.Context, msg *mq.MsgChatTransfer) error
+	Push(msg *mq.MsgChatTransfer) error
 }
 
 type msgChatTransferClient struct {
@@ -24,11 +24,11 @@ func NewMsgChatTransferClient(addr []string, topic string, opts ...kq.PushOption
 	}
 }
 
-func (c *msgChatTransferClient) Push(ctx context.Context, msg *mq.MsgChatTransfer) error {
+func (c *msgChatTransferClient) Push(msg *mq.MsgChatTransfer) error {
 	body, err := json.Marshal(msg)
 	if err != nil {
 		return err
 	}
 
-	return c.pusher.Push(ctx, string(body))
+	return c.pusher.Push(context.Background(), string(body))
 }

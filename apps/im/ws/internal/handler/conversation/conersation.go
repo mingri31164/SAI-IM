@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// 单独定义会话是因为聊天本身是需要在会话中去完成的，所以不在用户中去创建会话
+// Chat 单独定义会话是因为聊天本身是需要在会话中去完成的，所以不在用户中去创建会话
 func Chat(svc *svc.ServiceContext) websocket.HandlerFunc {
 	return func(srv *websocket.Server, conn *websocket.Conn, msg *websocket.Message) {
 		// todo: 私聊

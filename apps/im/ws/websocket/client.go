@@ -52,9 +52,12 @@ func (c *client) Send(v any) error {
 		return err
 	}
 	err = c.WriteMessage(websocket.TextMessage, data)
+
+	//✨错误为空直接返回
 	if err == nil {
 		return nil
 	}
+	//✨有错误时才重新创建连接
 	// todo: 再增加一个重连发送
 	conn, err := c.dail()
 	if err != nil {

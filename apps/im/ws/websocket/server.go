@@ -10,6 +10,25 @@ import (
 	"sync"
 )
 
+type AckType int
+
+const (
+	NoAck    AckType = iota // 不进行应答
+	OnlyAck                 // 服务端响应一次应答
+	RigorAck                // 严格应答，服务端应答后客户端再进行一次应答
+)
+
+func (t AckType) ToString() string {
+	switch t {
+	case OnlyAck:
+		return "OnlyAck"
+	case RigorAck:
+		return "RigorAck"
+	}
+
+	return "NoAck"
+}
+
 type Server struct {
 	sync.RWMutex
 	opt *serverOption

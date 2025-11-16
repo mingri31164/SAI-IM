@@ -24,6 +24,7 @@ const (
 // msg , id, seq
 type Message struct {
 	FrameType `json:"frameType"`
+	Id        string      `json:"id"`
 	AckSeq    int         `json:"ackSeq"`
 	ackTime   time.Time   `json:"ackTime"`
 	errCount  int         `json:"errCount"`

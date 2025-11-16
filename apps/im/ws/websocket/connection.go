@@ -10,7 +10,7 @@ import (
 type Conn struct {
 	idleMu sync.Mutex
 
-	Uid string
+	Uid string // 连接id
 
 	*websocket.Conn
 	s *Server
@@ -50,6 +50,38 @@ func NewConn(s *Server, w http.ResponseWriter, r *http.Request) *Conn {
 
 	go conn.keepalive()
 	return conn
+}
+
+func (c *Conn) appendMsgMq(msg *Message) {
+	c.messageMu.Lock()
+	defer c.messageMu.Unlock()
+
+	// 读队列中
+	if m, ok := c.readMessageSeq[msg.Id]; ok {
+		// 已经有消息的记录，该消息已经有ack的确认
+		if len(c.readMessage) == 0 {
+			// 队列中没有该消息
+			return
+		}
+
+		// ACK的确认是对当前序号进行+1处理
+		//✨如果传入的msg序号 <= 队列中存在的消息序号，则说明未进行ACK确认
+		if msg.AckSeq <= m.AckSeq {
+			// 没有进行ack的确认, 也可能为重复发送
+			return
+		}
+
+		c.readMessageSeq[msg.Id] = msg
+		return
+	}
+	// 还没有进行ack的确认, 避免客户端重复发送多余的ack消息
+	if msg.FrameType == FrameAck {
+		return
+	}
+
+	c.readMessage = append(c.readMessage, msg)
+	c.readMessageSeq[msg.Id] = msg
+
 }
 
 func (c *Conn) ReadMessage() (messageType int, p []byte, err error) {

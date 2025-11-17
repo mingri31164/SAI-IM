@@ -1,7 +1,7 @@
 package svc
 
 import (
-	immodels "SAI-IM/apps/im/models"
+	"SAI-IM/apps/im/immodels"
 	"SAI-IM/apps/im/ws/internal/config"
 	"SAI-IM/apps/task/mq/mqclient"
 )

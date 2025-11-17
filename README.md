@@ -81,7 +81,7 @@ WebSocket是一种基于tcp实现在Web应用中实现实时双向通信的协�
 2. 用户会话列表
 
 ```Bash
-goctl models mongo --type chatLog --dir ./apps/im/models/
+goctl models mongo --type chatLog --dir ./apps/im/immodels/
 ```
 
 #### 关键字段

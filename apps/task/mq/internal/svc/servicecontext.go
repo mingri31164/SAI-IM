@@ -1,7 +1,7 @@
 package svc
 
 import (
-	immodels "SAI-IM/apps/im/models"
+	immodels "SAI-IM/apps/im/immodels"
 	"SAI-IM/apps/im/ws/websocket"
 	"SAI-IM/apps/task/mq/internal/config"
 	"SAI-IM/pkg/constants"

@@ -1,7 +1,7 @@
 package logic
 
 import (
-	"SAI-IM/apps/im/models"
+	"SAI-IM/apps/im/immodels"
 	"SAI-IM/apps/im/ws/internal/svc"
 	"SAI-IM/apps/im/ws/websocket"
 	"SAI-IM/apps/im/ws/ws"

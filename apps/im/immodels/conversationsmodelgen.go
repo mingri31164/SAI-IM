@@ -5,18 +5,18 @@ package immodels
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/mon"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type conversationsModel interface {
 	Insert(ctx context.Context, data *Conversations) error
 	FindOne(ctx context.Context, id string) (*Conversations, error)
-	Update(ctx context.Context, data *Conversations) (*mongo.UpdateResult, error)
+	Update(ctx context.Context, data *Conversations) error
 	Delete(ctx context.Context, id string) (int64, error)
 	FindByUserId(ctx context.Context, uid string) (*Conversations, error)
 }
@@ -59,11 +59,14 @@ func (m *defaultConversationsModel) FindOne(ctx context.Context, id string) (*Co
 	}
 }
 
-func (m *defaultConversationsModel) Update(ctx context.Context, data *Conversations) (*mongo.UpdateResult, error) {
+func (m *defaultConversationsModel) Update(ctx context.Context, data *Conversations) error {
 	data.UpdateAt = time.Now()
 
-	res, err := m.conn.UpdateOne(ctx, bson.M{"_id": data.ID}, bson.M{"$set": data})
-	return res, err
+	// 如果存在就更新，不存在则插入
+	_, err := m.conn.UpdateOne(ctx, bson.M{"_id": data.ID}, bson.M{
+		"$set": data,
+	}, options.UpdateOne().SetUpsert(true))
+	return err
 }
 
 func (m *defaultConversationsModel) Delete(ctx context.Context, id string) (int64, error) {

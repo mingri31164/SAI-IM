@@ -52,7 +52,7 @@ func (l *PutConversationsLogic) PutConversations(in *im.PutConversationsReq) (*i
 			Seq:   conversation.Seq,
 		}
 	}
-	_, err = l.svcCtx.ConversationsModel.Update(l.ctx, data)
+	err = l.svcCtx.ConversationsModel.Update(l.ctx, data)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewDBErr(), "conversationModel.Update err %v,req %v", err, data)
 	}

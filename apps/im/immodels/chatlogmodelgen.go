@@ -3,7 +3,7 @@ package immodels
 
 import (
 	"context"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/mon"
@@ -80,16 +80,15 @@ func (m *defaultChatLogModel) ListBySendTime(ctx context.Context, conversationId
 	var data []*ChatLog
 
 	// 配置分页属性
-	opt := options.FindOptions{
-		// 设置一次读取多少条消息，进行分页
-		Limit: &DefaultChatLogLimit,
-		// 按照消息发送时间倒序
-		Sort: bson.M{
-			"sendTime": -1,
-		},
-	}
+	// 按照消息发送时间倒序
+	findOptions := options.Find().
+		SetSort(bson.M{"sendTime": -1})
+
+	// 设置一次读取多少条消息，进行分页
 	if limit > 0 {
-		opt.Limit = &limit
+		findOptions.SetLimit(limit)
+	} else {
+		findOptions.SetLimit(DefaultChatLogLimit)
 	}
 
 	filter := bson.M{
@@ -107,7 +106,7 @@ func (m *defaultChatLogModel) ListBySendTime(ctx context.Context, conversationId
 		}
 	}
 	// 查询数据
-	err := m.conn.Find(ctx, &data, filter, &opt)
+	err := m.conn.Find(ctx, &data, filter, findOptions)
 	switch err {
 	case nil:
 		return data, nil

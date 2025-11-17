@@ -12,6 +12,9 @@ type serverOption struct {
 
 	patten            string
 	maxConnectionIdle time.Duration
+
+	// 设置并发发送数据的量级
+	concurrency int
 }
 
 func newOption(opts ...ServerOption) serverOption {
@@ -20,6 +23,7 @@ func newOption(opts ...ServerOption) serverOption {
 		maxConnectionIdle: defaultMaxConnectionIdle,
 		ackTimeout:        defaultAckTimeout,
 		patten:            "/ws",
+		concurrency:       defaultConCurrency,
 	}
 	for _, opt := range opts {
 		opt(&o)

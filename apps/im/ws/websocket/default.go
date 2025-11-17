@@ -10,4 +10,6 @@ const (
 	defaultMaxConnectionIdle = time.Duration(math.MaxInt64)
 	// ACK默认超时时间
 	defaultAckTimeout = 30 * time.Second
+	// 定义websocket并发的默认量级
+	defaultConCurrency = 30
 )

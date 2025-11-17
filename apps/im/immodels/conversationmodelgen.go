@@ -18,6 +18,8 @@ type conversationModel interface {
 	FindOne(ctx context.Context, id string) (*Conversation, error)
 	Update(ctx context.Context, data *Conversation) (*mongo.UpdateResult, error)
 	Delete(ctx context.Context, id string) (int64, error)
+	ListByConversationIds(ctx context.Context, ids []string) ([]*Conversation, error)
+	UpdateMsg(ctx context.Context, chatLog *ChatLog) error
 }
 
 type defaultConversationModel struct {
@@ -73,4 +75,35 @@ func (m *defaultConversationModel) Delete(ctx context.Context, id string) (int64
 
 	res, err := m.conn.DeleteOne(ctx, bson.M{"_id": oid})
 	return res, err
+}
+
+// 根据id集合获取会话列表
+func (m *defaultConversationModel) ListByConversationIds(ctx context.Context, ids []string) ([]*Conversation, error) {
+	var data []*Conversation
+
+	err := m.conn.Find(ctx, &data, bson.M{
+		"conversationId": bson.M{
+			"$in": ids,
+		},
+	})
+	switch err {
+	case nil:
+		return data, nil
+	case mon.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultConversationModel) UpdateMsg(ctx context.Context, chatLog *ChatLog) error {
+	_, err := m.conn.UpdateOne(ctx,
+		bson.M{"conversationId": chatLog.ConversationId},
+		bson.M{
+			// 更新会话总消息数
+			"$inc": bson.M{"total": 1},
+			"$set": bson.M{"msg": chatLog},
+		},
+	)
+	return err
 }

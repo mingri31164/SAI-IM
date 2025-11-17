@@ -24,6 +24,7 @@ func NewConversationsModel(url, db, collection string) ConversationsModel {
 	}
 }
 
+// MustConversationsModel 创建模型时，指定集合对象为conversations
 func MustConversationsModel(url, db string) ConversationsModel {
 	return NewConversationsModel(url, db, "conversations")
 }

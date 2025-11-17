@@ -18,6 +18,7 @@ type conversationsModel interface {
 	FindOne(ctx context.Context, id string) (*Conversations, error)
 	Update(ctx context.Context, data *Conversations) (*mongo.UpdateResult, error)
 	Delete(ctx context.Context, id string) (int64, error)
+	FindByUserId(ctx context.Context, uid string) (*Conversations, error)
 }
 
 type defaultConversationsModel struct {
@@ -73,4 +74,18 @@ func (m *defaultConversationsModel) Delete(ctx context.Context, id string) (int6
 
 	res, err := m.conn.DeleteOne(ctx, bson.M{"_id": oid})
 	return res, err
+}
+
+func (m *defaultConversationsModel) FindByUserId(ctx context.Context, uid string) (*Conversations, error) {
+	var data Conversations
+
+	err := m.conn.FindOne(ctx, &data, bson.M{"userId": uid})
+	switch err {
+	case nil:
+		return &data, nil
+	case mon.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

@@ -75,11 +75,15 @@ func (m *defaultChatLogModel) Delete(ctx context.Context, id string) error {
 }
 
 // 查询聊天记录
+// ✨消息总是从最早的开始往前”分段读取“
 func (m *defaultChatLogModel) ListBySendTime(ctx context.Context, conversationId string, startSendTime, endSendTime, limit int64) ([]*ChatLog, error) {
 	var data []*ChatLog
 
+	// 配置分页属性
 	opt := options.FindOptions{
+		// 设置一次读取多少条消息，进行分页
 		Limit: &DefaultChatLogLimit,
+		// 按照消息发送时间倒序
 		Sort: bson.M{
 			"sendTime": -1,
 		},
@@ -102,6 +106,7 @@ func (m *defaultChatLogModel) ListBySendTime(ctx context.Context, conversationId
 			"$lt": startSendTime,
 		}
 	}
+	// 查询数据
 	err := m.conn.Find(ctx, &data, filter, &opt)
 	switch err {
 	case nil:

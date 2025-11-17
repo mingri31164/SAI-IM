@@ -3,9 +3,11 @@ package svc
 import (
 	immodels "SAI-IM/apps/im/immodels"
 	"SAI-IM/apps/im/ws/websocket"
+	"SAI-IM/apps/social/rpc/socialclient"
 	"SAI-IM/apps/task/mq/internal/config"
 	"SAI-IM/pkg/constants"
 	"github.com/zeromicro/go-zero/core/stores/redis"
+	"github.com/zeromicro/go-zero/zrpc"
 	"net/http"
 )
 
@@ -18,6 +20,8 @@ type ServiceContext struct {
 	immodels.ChatLogModel
 	// 会话模型
 	immodels.ConversationModel
+	// 提供社交服务的rpc支持
+	socialclient.Social
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -26,6 +30,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Redis:             redis.MustNewRedis(c.Redisx),
 		ChatLogModel:      immodels.MustChatLogModel(c.Mongo.Url, c.Mongo.Db),
 		ConversationModel: immodels.MustConversationModel(c.Mongo.Url, c.Mongo.Db),
+		Social:            socialclient.NewSocial(zrpc.MustNewClient(c.SocialRpc)),
 	}
 
 	token, err := svc.GetSystemToken()

@@ -20,5 +20,11 @@ Mongo:
   Url: "mongodb://root:sai-im@192.168.117.24:47017"
   Db: sai-im
 
+SocialRpc:
+  Etcd:
+    Hosts:
+      - 192.168.117.24:3379
+    Key: social.rpc
+
 Ws:
   Host: 127.0.0.1:10090

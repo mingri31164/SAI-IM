@@ -2,7 +2,7 @@ syntax = "v1"
 
 info (
 	title:  "im消息服务"
-	author: "木兮老师"
+	author: "mingri"
 )
 
 // ------- domain.api --------------------

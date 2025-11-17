@@ -69,6 +69,7 @@ func (l *SetUpUserConversationLogic) SetUpUserConversation(in *im.SetUpUserConve
 
 	// 群聊
 	case constants.GroupChatType:
+		// 此处会话ID就是群聊ID，接收者也是群聊ID
 		err := l.setUpUserConversation(in.RecvId, in.SendId, in.RecvId, constants.GroupChatType, true)
 		if err != nil {
 			return nil, err

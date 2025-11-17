@@ -165,6 +165,7 @@ func (s *Server) handlerConn(conn *Conn) {
 	go s.handlerWrite(conn)
 
 	if s.isAck(nil) {
+		//🔥注意此处开启协程异步运行，否则逻辑上会卡在此处
 		go s.readAck(conn)
 	}
 

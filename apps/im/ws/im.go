@@ -28,6 +28,7 @@ func main() {
 		websocket.WithAuthentication(handler.NewJwtAuth(ctx)),
 		// 调试时可先注释心跳检测
 		websocket.WithServerMaxConnectionIdle(10*time.Second),
+		websocket.WithServerAck(websocket.NoAck),
 	)
 	defer srv.Stop()
 

@@ -35,8 +35,6 @@ func NewGroupPutInHandleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *GroupPutInHandleLogic) GroupPutInHandle(in *social.GroupPutInHandleReq) (*social.GroupPutInHandleResp, error) {
-	// todo: add your logic here and delete this line
-
 	groupReq, err := l.svcCtx.GroupRequestsModel.FindOne(l.ctx, int64(in.GroupReqId))
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewDBErr(), "find friend req err %v req %v", err, in.GroupReqId)
@@ -77,5 +75,11 @@ func (l *GroupPutInHandleLogic) GroupPutInHandle(in *social.GroupPutInHandleReq)
 		return nil
 	})
 
-	return &social.GroupPutInHandleResp{}, err
+	if constants.HandlerResult(groupReq.HandleResult.Int64) != constants.PassHandlerResult {
+		return &social.GroupPutInHandleResp{}, err
+	}
+
+	return &social.GroupPutInHandleResp{
+		GroupId: groupReq.GroupId,
+	}, err
 }

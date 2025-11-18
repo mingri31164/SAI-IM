@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"SAI-IM/apps/im/rpc/imclient"
 	"SAI-IM/apps/social/api/internal/config"
 	"SAI-IM/apps/social/rpc/socialclient"
 	"SAI-IM/apps/user/rpc/userclient"
@@ -12,6 +13,7 @@ type ServiceContext struct {
 
 	socialclient.Social
 	userclient.User
+	imclient.Im
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -19,5 +21,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config: c,
 		Social: socialclient.NewSocial(zrpc.MustNewClient(c.SocialRpc)),
 		User:   userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		Im:     imclient.NewIm(zrpc.MustNewClient(c.ImRpc)),
 	}
 }

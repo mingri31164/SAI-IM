@@ -31,8 +31,6 @@ func NewGroupCreateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Group
 
 // 群要求
 func (l *GroupCreateLogic) GroupCreate(in *social.GroupCreateReq) (*social.GroupCreateResp, error) {
-	// todo: add your logic here and delete this line
-
 	groups := &socialmodels.Groups{
 		Id:         wuid.GenUid(l.svcCtx.Config.Mysql.DataSource),
 		Name:       in.Name,
@@ -60,5 +58,7 @@ func (l *GroupCreateLogic) GroupCreate(in *social.GroupCreateReq) (*social.Group
 		return nil
 	})
 
-	return &social.GroupCreateResp{}, err
+	return &social.GroupCreateResp{
+		Id: groups.Id,
+	}, err
 }

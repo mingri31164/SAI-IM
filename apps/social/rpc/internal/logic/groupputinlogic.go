@@ -150,6 +150,7 @@ func (l *GroupPutinLogic) createGroupReq(groupReq *socialmodels.GroupRequests, i
 		return nil, errors.Wrapf(xerr.NewDBErr(), "insert group req err %v req %v", err, groupReq)
 	}
 
+	// 群申请通过后返回群ID
 	if isPass {
 		return &social.GroupPutinResp{GroupId: groupReq.GroupId}, nil
 	}

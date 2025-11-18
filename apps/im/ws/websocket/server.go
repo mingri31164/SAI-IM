@@ -44,7 +44,7 @@ type Server struct {
 	authentication Authentication
 	logx.Logger
 
-	// gozero -> core -> threading
+	//✨ go-zero -> core -> threading
 	*threading.TaskRunner
 }
 

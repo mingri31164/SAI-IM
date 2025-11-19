@@ -22,6 +22,12 @@ type Config struct {
 
 	SocialRpc zrpc.RpcClientConf
 
+	MsgReadHandler struct {
+		GroupMsgReadHandler          int
+		GroupMsgReadRecordDelayTime  int
+		GroupMsgReadRecordDelayCount int
+	}
+
 	Ws struct {
 		Host string
 	}

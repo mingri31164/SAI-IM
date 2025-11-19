@@ -10,16 +10,52 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"github.com/zeromicro/go-queue/kq"
+	"github.com/zeromicro/go-zero/core/stores/cache"
+	"sync"
+	"time"
+)
+
+// 默认值
+var (
+	GroupMsgReadRecordDelayTime  = time.Second
+	GroupMsgReadRecordDelayCount = 10
+)
+
+const (
+	GroupMsgReadHandlerAtTransfer = iota //默认不开启已读消息缓存合并处理
+	GroupMsgReadHandlerDelayTransfer
 )
 
 type MsgReadTransfer struct {
 	*baseMsgTransfer
+
+	// 群聊消息缓存合并
+	cache.Cache
+	mu        sync.Mutex
+	groupMsgs map[string]*groupMsgRead // 考虑到要处理多个群，用map存储
+	push      chan *ws.Push
 }
 
 func NewMsgReadTransfer(svc *svc.ServiceContext) kq.ConsumeHandler {
-	return &MsgChatTransfer{
-		NewBaseMsgTransfer(svc),
+	m := &MsgReadTransfer{
+		baseMsgTransfer: NewBaseMsgTransfer(svc),
+		groupMsgs:       make(map[string]*groupMsgRead, 1),
+		push:            make(chan *ws.Push, 1),
 	}
+	// 如果开启 已读消息缓存合并处理
+	if svc.Config.MsgReadHandler.GroupMsgReadHandler != GroupMsgReadHandlerAtTransfer {
+		// 最大计数
+		if svc.Config.MsgReadHandler.GroupMsgReadRecordDelayCount > 0 {
+			// 设置值
+			GroupMsgReadRecordDelayCount = svc.Config.MsgReadHandler.GroupMsgReadRecordDelayCount
+		}
+		// 超时时间
+		if svc.Config.MsgReadHandler.GroupMsgReadRecordDelayTime > 0 {
+			GroupMsgReadRecordDelayTime = time.Duration(svc.Config.MsgReadHandler.GroupMsgReadRecordDelayTime) * time.Second
+		}
+	}
+
+	return m
 }
 
 func (m *MsgReadTransfer) Consume(ctx context.Context, key, value string) error {

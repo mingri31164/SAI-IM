@@ -20,6 +20,14 @@ MsgReadTransfer:
   Offset: first
   Consumers: 1
 
+MsgReadHandler:
+  # 对消息已读未读的缓存是否开启（0：关闭 1：开启）
+  GroupMsgReadHandler: 1
+  # 缓存超时时间
+  GroupMsgReadRecordDelayTime: 5
+  # 缓存时间内消息的最大上限，超过时直接弗发送
+  GroupMsgReadRecordDelayCount: 2
+
 Redisx:
   Host: 192.168.117.24:16379
   Type: node

@@ -55,6 +55,9 @@ func NewMsgReadTransfer(svc *svc.ServiceContext) kq.ConsumeHandler {
 		}
 	}
 
+	//✨注意要协程运行
+	go m.transfer()
+
 	return m
 }
 
@@ -78,15 +81,43 @@ func (m *MsgReadTransfer) Consume(ctx context.Context, key, value string) error 
 	//✨注：因为已读记录需要通过 mq -> websocket -> 接收者，
 	//      这个过程中避免类型问题，已读记录以string的方式传参会更合适
 
-	return m.Transfer(ctx, &ws.Push{
+	push := &ws.Push{
 		ConversationId: data.ConversationId,
 		ChatType:       data.ChatType,
 		SendId:         data.SendId,
 		RecvId:         data.RecvId,
 		ContentType:    constants.ContentMakeRead,
 		ReadRecords:    readRecords,
-	})
+	}
+	// 判断消息类型
+	switch data.ChatType {
+	case constants.SingleChatType:
+		// 直接推送
+		m.push <- push
+	case constants.GroupChatType:
+		// 判断是否采用合并发送
+		// 若不开启
+		if m.svcCtx.Config.MsgReadHandler.GroupMsgReadHandler == GroupMsgReadHandlerAtTransfer {
+			m.push <- push
+			break
+		}
+		// 开启
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		push.SendId = "" // 因为群聊消息此时是合并的，不需要发送者ID
+		// 已经有消息
+		if _, ok := m.groupMsgs[push.ConversationId]; ok {
+			// 和并请求
+			m.Infof("merge push: %v", push.ConversationId)
+			m.groupMsgs[push.ConversationId].mergePush(push)
+		} else {
+			// 没有记录，创建
+			m.Infof("create merge push %v", push.ConversationId)
+			m.groupMsgs[push.ConversationId] = newGroupMsgRead(push, m.push)
+		}
+	}
 
+	return nil
 }
 
 func (m *MsgReadTransfer) UpdateChatLogRead(ctx context.Context, data *mq.MsgMarkRead) (map[string]string, error) {
@@ -116,4 +147,31 @@ func (m *MsgReadTransfer) UpdateChatLogRead(ctx context.Context, data *mq.MsgMar
 		}
 	}
 	return result, nil
+}
+
+// 异步处理消息发送
+func (m *MsgReadTransfer) transfer() {
+	for push := range m.push {
+		if push.RecvId != "" || len(push.RecvIds) > 0 {
+			if err := m.Transfer(context.Background(), push); err != nil {
+				m.Errorf("transfer err: %s", err.Error())
+			}
+		}
+
+		if push.ChatType == constants.SingleChatType {
+			// 类型有问题，不处理该消息
+			continue
+		}
+		// 不采用合并推送
+		if m.svcCtx.Config.MsgReadHandler.GroupMsgReadHandler == GroupMsgReadHandlerAtTransfer {
+			continue
+		}
+		// 清空数据
+		m.mu.Lock()
+		if _, ok := m.groupMsgs[push.ConversationId]; ok && m.groupMsgs[push.ConversationId].IsIdle() {
+			m.groupMsgs[push.ConversationId].Clear()
+			delete(m.groupMsgs, push.ConversationId)
+		}
+		m.mu.Unlock()
+	}
 }

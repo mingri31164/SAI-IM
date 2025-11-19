@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type MsgChatTransfer struct {
@@ -26,7 +27,8 @@ func NewMsgChatTransfer(svc *svc.ServiceContext) *MsgChatTransfer {
 func (m *MsgChatTransfer) Consume(ctx context.Context, key, value string) error {
 	fmt.Println("key : ", key, " value : ", value)
 	var (
-		data mq.MsgChatTransfer
+		data  mq.MsgChatTransfer
+		msgId = primitive.NewObjectID()
 		//ctx  = context.Background()
 	)
 	if err := json.Unmarshal([]byte(value), &data); err != nil {
@@ -34,7 +36,7 @@ func (m *MsgChatTransfer) Consume(ctx context.Context, key, value string) error 
 	}
 
 	// 记录数据
-	if err := m.addChatLog(ctx, &data); err != nil {
+	if err := m.addChatLog(ctx, msgId, &data); err != nil {
 		return err
 	}
 
@@ -47,13 +49,15 @@ func (m *MsgChatTransfer) Consume(ctx context.Context, key, value string) error 
 		RecvIds:        data.RecvIds,
 		SendTime:       data.SendTime,
 		MType:          data.MType,
+		MsgId:          msgId.Hex(),
 		Content:        data.Content,
 	})
 }
 
-func (m *MsgChatTransfer) addChatLog(ctx context.Context, data *mq.MsgChatTransfer) error {
+func (m *MsgChatTransfer) addChatLog(ctx context.Context, msgId primitive.ObjectID, data *mq.MsgChatTransfer) error {
 	// 记录消息
 	chatLog := immodels.ChatLog{
+		ID:             msgId,
 		ConversationId: data.ConversationId,
 		SendId:         data.SendId,
 		RecvId:         data.RecvId,

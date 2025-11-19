@@ -10,8 +10,10 @@ import "SAI-IM/pkg/constants"
 type (
 	// chat中具体的消息格式
 	Msg struct {
+		MsgId           string `mapstructure:"msgId"`
 		constants.MType `mapstructure:"mType"`
-		Content         string `mapstructure:"content"`
+		Content         string            `mapstructure:"content"`
+		ReadRecords     map[string]string `mapstructure:"readRecords"`
 	}
 
 	// 对应message中的data，真正的聊天发送对象
@@ -27,12 +29,14 @@ type (
 	Push struct {
 		ConversationId     string `mapstructure:"conversationId"`
 		constants.ChatType `mapstructure:"chatType"`
-		SendId             string                `mapstructure:"sendId"`
-		RecvId             string                `mapstructure:"recvId"`
-		RecvIds            []string              `mapstructure:"recvIds"` // 群聊消息推送时考虑多个用户的接收
-		SendTime           int64                 `mapstructure:"sendTime"`
-		ReadRecords        map[string]string     `mapstructure:"readRecords"`
-		ContentType        constants.ContentType `mapstructure:"contentType"`
+		SendId             string   `mapstructure:"sendId"`
+		RecvId             string   `mapstructure:"recvId"`
+		RecvIds            []string `mapstructure:"recvIds"` // 群聊消息推送时考虑多个用户的接收
+		SendTime           int64    `mapstructure:"sendTime"`
+
+		MsgId       string                `mapstructure:"msgId"`
+		ReadRecords map[string]string     `mapstructure:"readRecords"`
+		ContentType constants.ContentType `mapstructure:"contentType"`
 
 		constants.MType `mapstructure:"mType"`
 		Content         string `mapstructure:"content"`

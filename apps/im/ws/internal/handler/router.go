@@ -23,5 +23,9 @@ func RegisterHandlers(srv *websocket.Server, svc *svc.ServiceContext) {
 			Method:  "push",
 			Handler: push.Push(svc),
 		},
+		{
+			Method:  "conversation.markRead",
+			Handler: conversation.MarkRead(svc),
+		},
 	})
 }

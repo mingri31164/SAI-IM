@@ -1,0 +1,22 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:10000
+Etcd:
+  Hosts:
+    - 106.14.194.111:3379
+  Key: user.rpc
+
+Mysql:
+  DataSource: root:sai-im@tcp(106.14.194.111:13306)/im?charset=utf8mb4&parseTime=true
+
+Redisx:
+  Host: 106.14.194.111:16379
+  Type: node
+  Pass: sai-im
+
+Cache:
+  - Host: 106.14.194.111:16379
+    Type: node
+    Pass: sai-im
+Jwt:
+  AccessSecret: sai-im
+  AccessExpire: 86400

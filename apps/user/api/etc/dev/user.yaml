@@ -8,6 +8,11 @@ UserRpc:
       - 192.168.117.24:3379
     Key: user.rpc
 
+Redisx:
+  Host: 106.14.194.111:16379
+  Type: node
+  Pass: sai-im
+
 JwtAuth:
   AccessSecret: mingri
   AccessExpire: 8640000

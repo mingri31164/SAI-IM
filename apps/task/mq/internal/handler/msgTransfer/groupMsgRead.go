@@ -2,6 +2,8 @@ package msgTransfer
 
 import (
 	"SAI-IM/apps/im/ws/ws"
+	"SAI-IM/pkg/constants"
+	"github.com/zeromicro/go-zero/core/logx"
 	"sync"
 	"time"
 )
@@ -36,6 +38,8 @@ func newGroupMsgRead(push *ws.Push, pushChan chan *ws.Push) *groupMsgRead {
 		done:           make(chan struct{}),
 	}
 
+	go m.transfer()
+
 	return m
 }
 
@@ -53,6 +57,80 @@ func (g *groupMsgRead) mergePush(push *ws.Push) {
 		// 如果存在相同消息，进行替换即可
 		// 原因：msgReadTransfer中对于已读消息的处理，是在原来的基础上进行更改，所以我们只需要记录就可以覆盖了
 		g.push.ReadRecords[msgId] = read
+	}
+}
+
+// 在消息合并后进行检查，与websocket中的心跳检测机制相似
+func (g *groupMsgRead) transfer() {
+	// 超时发送
+	timer := time.NewTimer(GroupMsgReadRecordDelayTime / 2)
+	defer timer.Stop()
+	for {
+		select {
+		case <-g.done:
+			return
+		case <-timer.C:
+			g.mu.Lock()
+			// 获取上一次推送时间
+			lastPushTime := g.pushTime
+			// *2，防止在推送时刻由于阻塞未推送
+			val := GroupMsgReadRecordDelayTime*2 - time.Since(lastPushTime)
+			// 得到待推送的数据
+			push := g.push
+			// 当前没有超时且没有超过最大计数，或数据为空
+			if val > 0 && g.count < GroupMsgReadRecordDelayCount || push == nil {
+				//✨重置定时器
+				if val > 0 {
+					timer.Reset(val)
+				}
+				// 未达标
+				g.mu.Unlock()
+				continue
+			}
+			// 达标
+			g.pushTime = time.Now()
+			g.push = nil
+			g.count = 0
+			timer.Reset(GroupMsgReadRecordDelayTime / 2)
+			g.mu.Unlock()
+			// 推送
+			logx.Infof("merge push delay time condition reached, push: %v ", push)
+			g.pushChan <- push
+		default:
+			g.mu.Lock()
+			// 消息数量达到最大值
+			if g.count >= GroupMsgReadRecordDelayCount {
+				// 达标，推送
+				// 得到待推送的数据
+				push := g.push
+				g.push = nil
+				g.count = 0
+				g.mu.Unlock()
+				// 推送
+				logx.Infof("merge push max delay count condition reached, push: %v ", push)
+				g.pushChan <- push
+				continue
+			}
+			// 没有达到最大值，判断当前运行状态是否为空
+			if g.isIdle() {
+				g.mu.Unlock()
+				// 使得 msgReadTransfer 释放
+				g.pushChan <- &ws.Push{
+					ChatType:       constants.GroupChatType,
+					ConversationId: g.conversationId,
+				}
+				continue
+			}
+			// 默认检测时，发现合并后的消息没有问题，且当前状态为活跃状态
+			// 则设置默认的延迟时间缓一下
+			g.mu.Unlock()
+			// 睡眠等待一段时间，最大为一秒钟
+			tempDelay := GroupMsgReadRecordDelayTime / 4
+			if tempDelay > time.Second {
+				tempDelay = time.Second
+			}
+			time.Sleep(tempDelay)
+		}
 	}
 }
 

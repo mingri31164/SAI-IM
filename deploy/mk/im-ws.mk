@@ -1,7 +1,7 @@
 VERSION=latest
 
-SERVER_NAME=user
-SERVER_TYPE=rpc
+SERVER_NAME=im
+SERVER_TYPE=ws
 
 # 测试环境配置
 # docker的镜像发布地址

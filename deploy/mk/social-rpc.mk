@@ -1,6 +1,6 @@
 VERSION=latest
 
-SERVER_NAME=user
+SERVER_NAME=social
 SERVER_TYPE=rpc
 
 # 测试环境配置

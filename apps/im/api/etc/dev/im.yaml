@@ -23,5 +23,5 @@ UserRpc:
       user.rpc
 
 JwtAuth:
-  AccessSecret: easy-chat
+  AccessSecret: sai-im
   AccessExpire: 864000

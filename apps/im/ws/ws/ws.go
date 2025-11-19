@@ -27,12 +27,21 @@ type (
 	Push struct {
 		ConversationId     string `mapstructure:"conversationId"`
 		constants.ChatType `mapstructure:"chatType"`
-		SendId             string   `mapstructure:"sendId"`
-		RecvId             string   `mapstructure:"recvId"`
-		RecvIds            []string `mapstructure:"recvIds"` // 群聊消息推送时考虑多个用户的接收
-		SendTime           int64    `mapstructure:"sendTime"`
+		SendId             string                `mapstructure:"sendId"`
+		RecvId             string                `mapstructure:"recvId"`
+		RecvIds            []string              `mapstructure:"recvIds"` // 群聊消息推送时考虑多个用户的接收
+		SendTime           int64                 `mapstructure:"sendTime"`
+		ReadRecords        map[string]string     `mapstructure:"readRecords"`
+		ContentType        constants.ContentType `mapstructure:"contentType"`
 
 		constants.MType `mapstructure:"mType"`
 		Content         string `mapstructure:"content"`
+	}
+
+	MarkRead struct {
+		constants.ChatType `mapstructure:"chatType"`
+		ConversationId     string   `mapstructure:"conversationId"`
+		RecvId             string   `mapstructure:"recvId"`
+		MsgIds             []string `mapstructure:"msgIds"`
 	}
 )

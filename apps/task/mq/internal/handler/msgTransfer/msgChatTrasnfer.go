@@ -5,6 +5,7 @@ import (
 	"SAI-IM/apps/im/ws/ws"
 	"SAI-IM/apps/task/mq/internal/svc"
 	"SAI-IM/apps/task/mq/mq"
+	"SAI-IM/pkg/bitmap"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -62,6 +63,12 @@ func (m *MsgChatTransfer) addChatLog(ctx context.Context, data *mq.MsgChatTransf
 		MsgContent:     data.Content,
 		SendTime:       data.SendTime,
 	}
+
+	// 设置发送者本人已读
+	readRecords := bitmap.NewBitmap(0)
+	readRecords.Set(chatLog.SendId)
+	chatLog.ReadRecords = readRecords.Export()
+
 	err := m.svcCtx.ChatLogModel.Insert(ctx, &chatLog)
 	if err != nil {
 		return err

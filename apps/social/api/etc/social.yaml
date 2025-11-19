@@ -1,0 +1,29 @@
+Name: social
+Host: 0.0.0.0
+Port: 8881
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 106.14.194.111:3379
+    Key: user.rpc
+
+SocialRpc:
+  Etcd:
+    Hosts:
+      - 106.14.194.111:3379
+    Key: social.rpc
+
+ImRpc:
+  Etcd:
+    Hosts:
+      - 106.14.194.111:3379
+    Key: im.rpc
+
+Redisx:
+  Host: 106.14.194.111:16379
+  Type: node
+  Pass: sai-im
+
+JwtAuth:
+  AccessSecret: sai-im

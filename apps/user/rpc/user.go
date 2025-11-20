@@ -23,6 +23,7 @@ func main() {
 	flag.Parse()
 
 	var c config.Config
+	// go-zero配置默认加载方式
 	conf.MustLoad(*configFile, &c)
 	ctx := svc.NewServiceContext(c)
 

@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`project_group`
     `create_time` timestamp          NOT NULL,
     `create_by`   int                NOT NULL,
     `delete_time` int                NOT NULL DEFAULT 0
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`project`
 (
@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`project`
     `create_by`        int                NOT NULL,
     `delete_time`      int                NOT NULL DEFAULT 0,
     INDEX (`project_group_id`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`namespace`
 (
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`namespace`
     `create_by`        int          NOT NULL,
     `delete_time`      int          NOT NULL DEFAULT 0,
     UNIQUE KEY (`project_group_id`, `name`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`staff`
 (
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`staff`
     `refresh_token` varchar(200)       NOT NULL DEFAULT '',
     `create_time`   timestamp          NOT NULL,
     `create_by`     int                NOT NULL
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`staff_group_rel`
 (
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`staff_group_rel`
     `role_type`        tinyint NOT NULL COMMENT '权限角色',
     INDEX (`project_group_id`),
     INDEX (`staff_id`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`config`
 (
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`config`
     `is_encrypt`       bool        NOT NULL,
     `config_type`      varchar(10) NOT NULL,
     UNIQUE KEY (`project_id`, `namespace_id`, `project_group_id`, `name`, `config_type`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`config_link`
 (
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`config_link`
     `public_config_id` int NOT NULL,
     UNIQUE KEY (`config_id`, `public_config_id`),
     INDEX (`public_config_id`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`config_history`
 (
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`config_history`
     `create_time` timestamp NOT NULL,
     `create_by`   int       NOT NULL,
     UNIQUE KEY (`config_id`, `reversion`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`publish`
 (
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`publish`
     `update_time`   timestamp NOT NULL Default CURRENT_TIMESTAMP,
     INDEX (`project_id`, `namespace_id`, `status`),
     UNIQUE INDEX (`publish_token`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`publish_config`
 (
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`publish_config`
     `update_time`          timestamp NOT NULL Default CURRENT_TIMESTAMP,
     UNIQUE INDEX (`publish_id`, `config_id`),
     INDEX (`config_id`)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS `sail`.`publish_strategy`
 (
@@ -125,7 +125,7 @@ CREATE TABLE IF NOT EXISTS `sail`.`publish_strategy`
     `create_time` timestamp    NOT NULL Default CURRENT_TIMESTAMP,
     `update_time` timestamp    NOT NULL Default CURRENT_TIMESTAMP,
     INDEX (`publish_id`)
-    );
+);
 
 INSERT INTO `sail`.staff (id, name, password, create_time, create_by)
     VALUE (1, 'Admin',

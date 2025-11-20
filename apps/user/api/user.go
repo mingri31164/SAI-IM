@@ -1,6 +1,7 @@
 package main
 
 import (
+	"SAI-IM/pkg/configserver"
 	"SAI-IM/pkg/resultx"
 	"flag"
 	"fmt"
@@ -10,7 +11,6 @@ import (
 	"SAI-IM/apps/user/api/internal/handler"
 	"SAI-IM/apps/user/api/internal/svc"
 
-	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
 )
 
@@ -20,7 +20,23 @@ func main() {
 	flag.Parse()
 
 	var c config.Config
-	conf.MustLoad(*configFile, &c)
+	// go-zero配置默认加载方式
+	//conf.MustLoad(*configFile, &c)
+
+	var configs = "user-api.yaml"
+
+	// 配置中心加载方式
+	err := configserver.NewConfigServer(*configFile, configserver.NewSail(&configserver.Config{
+		ETCDEndpoints:  "118.178.120.11:3379",
+		ProjectKey:     "3c46a0407be60a1f00731ab8e9575df2",
+		Namespace:      "user",
+		Configs:        configs,
+		ConfigFilePath: "../etc/conf",
+		LogLevel:       "DEBUG",
+	})).MustLoad(&c)
+	if err != nil {
+		panic(err)
+	}
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()

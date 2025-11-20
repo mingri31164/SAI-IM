@@ -111,7 +111,7 @@ services:
     ports:
       - "9000:9000"
     networks:
-      easy-chat:
+      sai-im:
 
   apisix:
     image: apache/apisix:latest
@@ -131,6 +131,18 @@ services:
       - "9091:9091/tcp"
       - "9443:9443/tcp"
       - "9093:9092/tcp"
+    networks:
+      sai-im:
+
+  sail:
+    image: ccr.ccs.tencentyun.com/hyy-yu/sail:latest
+    container_name: sail
+    ports:
+      - "8108:8108"
+    volumes:
+      - "./components/sail/compose-cfg.toml:/app/cfg.toml"
+    restart: always
+    platform: linux/arm64
     networks:
       easy-chat:
 

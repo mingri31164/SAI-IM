@@ -41,6 +41,8 @@ func main() {
 	s.AddUnaryInterceptors(rpcserver.LogInterceptor)
 	defer s.Stop()
 
+	// TODO: RPC服务平滑重启
+
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()
 }

@@ -7,7 +7,12 @@ import (
 
 var ErrNotSetConfig = errors.New("none config info...")
 
+// OnChange ✨配置信息修改后的触发方法
+type OnChange func([]byte) error
+
 type ConfigServer interface {
+	Build() error
+	SetOnChange(OnChange)
 	FromJsonBytes() ([]byte, error) // 数据来源(json)
 }
 
@@ -25,7 +30,7 @@ func NewConfigServer(configFile string, s ConfigServer) *configSever {
 }
 
 // 解析配置加载
-func (s *configSever) MustLoad(v any) error {
+func (s *configSever) MustLoad(v any, onChange OnChange) error {
 	if s.configFile == "" && s.ConfigServer == nil {
 		return ErrNotSetConfig
 	}
@@ -33,6 +38,15 @@ func (s *configSever) MustLoad(v any) error {
 		// 使用go-zero默认方式
 		conf.MustLoad(s.configFile, v)
 		return nil
+	}
+
+	// 判断是否配置动态加载
+	if onChange != nil {
+		s.SetOnChange(onChange)
+	}
+	// 构建配置服务
+	if err := s.ConfigServer.Build(); err != nil {
+		return err
 	}
 
 	// 使用配置中心的加载方式

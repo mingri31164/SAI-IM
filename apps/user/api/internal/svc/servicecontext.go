@@ -9,6 +9,8 @@ import (
 )
 
 // google.golang.org\grpc\server_config.go -> jsonMc jsonRetryPolicy
+// google.golang.org\grpc\stream.go -> shouldRetry（判断是否应该重试）
+// ✨withRetry（先会停止接收重试任务的执行->执行具体的任务->任务执行后判断是否出现异常）-> retryLocked（失败之后的重试处理）
 // grpc重试机制配置文件
 //var retryPolicy = `{
 //	"methodConfig" : [{

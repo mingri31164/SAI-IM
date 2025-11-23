@@ -144,7 +144,7 @@ services:
     restart: always
     platform: linux/arm64
     networks:
-      easy-chat:
+      sai-im:
 
 networks:
   sai-im:

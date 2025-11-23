@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/collection"
+	"github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/utils"
 
 	"google.golang.org/grpc"
@@ -82,4 +84,69 @@ func NewIdempotenceServer(idempotent Idempotent) grpc.UnaryServerInterceptor {
 		return nil, errors.WithStack(xerr.New(int(codes.DeadlineExceeded), fmt.Sprintf("存在其他任务在执行"+
 			"id %v", identify[0])))
 	}
+}
+
+// 默认幂等性对象处理实现（实现Idempotent接口中定义的所有方法）
+
+var (
+	DefaultIdempotent       = new(defaultIdempotent)                  // 默认幂等性的对象处理
+	DefaultIdempotentClient = NewIdempotenceClient(DefaultIdempotent) // 默认幂等性的拦截客户端
+)
+
+type defaultIdempotent struct {
+	// 获取和设置请求的id
+	Redis *redis.Redis
+	// 注意存储
+	Cache *collection.Cache
+	// 定义需要幂等处理的方法（路由）
+	method map[string]bool
+}
+
+func NewDefaultIdempotent(c redis.RedisConf) Idempotent {
+	cache, err := collection.NewCache(60 * 60)
+	if err != nil {
+		panic(err)
+	}
+	return &defaultIdempotent{
+		Redis: redis.MustNewRedis(c),
+		Cache: cache,
+		method: map[string]bool{
+			// 该路径为类库文件（pb.go）中定义
+			"/social.social/GroupCreate": true,
+		},
+	}
+}
+
+// Identify 获取请求标识
+func (d *defaultIdempotent) Identify(ctx context.Context, method string) string {
+	id := ctx.Value(TKey)
+	// 请求id：key + method
+	rpcId := fmt.Sprintf("%v.%s", id, method)
+	return rpcId
+}
+
+// IsIdempotentMethod 是否支持幂等性
+func (d *defaultIdempotent) IsIdempotentMethod(fullMethod string) bool {
+	return d.method[fullMethod]
+}
+
+// TryAcquire 幂等性的验证处理
+func (d *defaultIdempotent) TryAcquire(ctx context.Context, id string) (resp any, isAcquire bool) {
+	// 基于redis锁实现
+	// 如果存在这个键就返回false
+	retry, err := d.Redis.SetnxEx(id, "1", 60*60)
+	if err != nil {
+		return nil, false
+	}
+	if retry {
+		return nil, true
+	}
+	resp, _ = d.Cache.Get(id)
+	return resp, false
+}
+
+// SaveResp 保存执行后的结果
+func (d *defaultIdempotent) SaveResp(ctx context.Context, id string, resp any, respErr error) error {
+	d.Cache.Set(id, resp)
+	return nil
 }

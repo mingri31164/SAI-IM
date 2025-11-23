@@ -1,6 +1,7 @@
 package main
 
 import (
+	"SAI-IM/pkg/interceptor"
 	"SAI-IM/pkg/interceptor/rpcserver"
 	"flag"
 	"fmt"
@@ -34,6 +35,8 @@ func main() {
 		}
 	})
 	s.AddUnaryInterceptors(rpcserver.LogInterceptor)
+	//✨ 在客户端传递参数即可，但在服务端需要传递出Redis的配置信息
+	s.AddUnaryInterceptors(interceptor.NewIdempotenceServer(interceptor.NewDefaultIdempotent(c.Cache[0].RedisConf)))
 
 	defer s.Stop()
 

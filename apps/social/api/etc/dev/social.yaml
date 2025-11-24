@@ -27,3 +27,8 @@ Redisx:
 
 JwtAuth:
   AccessSecret: sai-im
+
+Telemetry:
+  Name: social.api
+  Endpoint: http://118.178.120.11:14268/api/traces
+  Batcher: jaeger

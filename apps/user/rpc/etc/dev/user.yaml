@@ -2,7 +2,7 @@ Name: user.rpc
 ListenOn: 0.0.0.0:10000
 Etcd:
   Hosts:
-  - 192.168.117.24:2379
+    - 192.168.117.24:2379
   Key: user.rpc
 
 Mysql:
@@ -21,3 +21,10 @@ Cache:
 Jwt:
   AccessSecret: mingri
   AccessExpire: 8640000
+
+#✨ go-zero已封装好tracer，只需配置即可
+Telemetry:
+  Name: user.rpc
+  Endpoint: http://118.178.120.11:14268/api/traces
+  # 服务的对象类型
+  Batcher: jaeger

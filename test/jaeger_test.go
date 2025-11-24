@@ -5,7 +5,6 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	jaegercfg "github.com/uber/jaeger-client-go/config"
-	"strings"
 	"testing"
 )
 
@@ -53,58 +52,4 @@ func B(tracer opentracing.Tracer, parentSpan opentracing.Span) {
 	// 刷新到服务器上
 	defer childSpan.Finish()
 
-}
-
-func Test_reverseWords(t *testing.T) {
-	fmt.Println([]byte("blue  is sky the"))
-	tests := []struct {
-		input  string
-		output string
-	}{
-		{"the sky is blue", "blue is sky the"}, {" hello world ", "world hello"}, {"a good example", "example good a"}, {"", ""}, {" a ", "a"},
-	}
-	for _, tt := range tests {
-		result := reverseWords(tt.input)
-		if result != tt.output {
-			t.Errorf("expected:%s\t,result:%s\n", tt.output, result)
-		} else {
-			fmt.Printf("expected:%s\t,result:%s\n", tt.output, result)
-		}
-	}
-}
-func reverseWords(s string) string {
-	s = strings.TrimSpace(s)
-	sb := []byte(s)
-	left, right := 0, 0
-	for right < len(s) {
-		for 0 < right && right < len(s) && s[right] == ' ' && s[right-1] == ' ' {
-			right++
-			continue
-		}
-		sb[left] = sb[right]
-		right++
-		left++
-	}
-	sb = sb[0:left]
-	s = string(sb)
-	ans := make([]string, 0, len(sb))
-	j := 0
-	for i := 0; i <= len(s); i++ {
-		if i == len(s) {
-			ans = append(ans, s[j:i])
-			break
-		}
-		if sb[i] == ' ' {
-			ans = append(ans, s[j:i])
-			j = i + 1
-		}
-	}
-	a := strings.Builder{}
-	for i := len(ans) - 1; i >= 0; i-- {
-		a.WriteString(ans[i])
-		if i != 0 {
-			a.WriteString(" ")
-		}
-	}
-	return a.String()
 }

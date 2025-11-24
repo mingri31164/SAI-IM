@@ -134,6 +134,21 @@ services:
     networks:
       sai-im:
 
+  jeager:
+    image: jaegertracing/all-in-one:latest
+    container_name: jeager
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+    restart: always
+    networks:
+      sai-im:
+
   sail:
     image: ccr.ccs.tencentyun.com/hyy-yu/sail:latest
     container_name: sail

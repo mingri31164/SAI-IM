@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// SyncLimiterInterceptor 底层基于channel管道阻塞实现并发限流
 func SyncLimiterInterceptor(maxCount int) grpc.UnaryServerInterceptor {
 	l := syncx.NewLimit(maxCount) // 定义最大并发数量
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {

@@ -34,7 +34,8 @@ func main() {
 			reflection.Register(grpcServer)
 		}
 	})
-	s.AddUnaryInterceptors(rpcserver.LogInterceptor)
+
+	s.AddUnaryInterceptors(rpcserver.LogInterceptor, rpcserver.SyncLimiterInterceptor(10))
 	//✨ 在客户端传递参数即可，但在服务端需要传递出Redis的配置信息
 	s.AddUnaryInterceptors(interceptor.NewIdempotenceServer(interceptor.NewDefaultIdempotent(c.Cache[0].RedisConf)))
 

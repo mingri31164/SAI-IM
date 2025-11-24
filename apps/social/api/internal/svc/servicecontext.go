@@ -20,6 +20,7 @@ type ServiceContext struct {
 	userclient.User
 	imclient.Im
 
+	LimitMiddleware       rest.Middleware
 	IdempotenceMiddleware rest.Middleware
 }
 
@@ -34,6 +35,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		)),
 		User:                  userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 		Im:                    imclient.NewIm(zrpc.MustNewClient(c.ImRpc)),
+		LimitMiddleware:       middleware.NewLimitMiddleware(c.Redisx).TokenLimitHandler(1, 100),
 		IdempotenceMiddleware: middleware.NewIdempotenceMiddleware().Handler,
 	}
 }

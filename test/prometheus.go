@@ -1,10 +1,8 @@
 package test
 
 import (
-	"fmt"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"net/http"
+	"github.com/zeromicro/go-zero/core/metric"
+	"github.com/zeromicro/go-zero/core/prometheus"
 	"time"
 )
 
@@ -15,28 +13,54 @@ func main() {
 	      2. 自定义采集信息
 	**/
 
-	// 自定义监控指标
-	temp := prometheus.NewGauge(prometheus.GaugeOpts{
-		Name: "tests_temp_gauge",
-		Help: "the is test gauge",
+	// 初始化prometheus,并对外提供监听接口
+	pCfg := prometheus.Config{
+		Host: "0.0.0.0",
+		Port: 1234,
+		Path: "/metrics",
+	}
+	prometheus.StartAgent(pCfg)
+
+	gaugeVec := metric.NewGaugeVec(&metric.GaugeVecOpts{
+		Namespace: "core",
+		Subsystem: "tests",
+		Name:      "go_zero_test",
+		Help:      "test go-zero prometheus and metric",
+		Labels:    []string{"path"},
 	})
-	//将采集信息注册到prometheus中
-	prometheus.MustRegister(temp)
 
 	var i int
-	go func() {
-		for {
-			i++
-			// 每执行2次就添加一次数据指标（记录）
-			if i%2 == 0 {
-				temp.Inc()
-			}
-			time.Sleep(time.Second)
+	for {
+		i++
+		if i%2 == 0 {
+			gaugeVec.Inc("/user")
 		}
-	}()
 
-	// 对prometheus提供一个监听的接口，接口路径与配置中的对应
-	http.Handle("/metrics", promhttp.Handler())
+		time.Sleep(time.Second)
+	}
 
-	fmt.Println(http.ListenAndServe(":1234", nil))
+	//// 自定义监控指标
+	//temp := prometheus.NewGauge(prometheus.GaugeOpts{
+	//	Name: "tests_temp_gauge",
+	//	Help: "the is test gauge",
+	//})
+	////将采集信息注册到prometheus中
+	//prometheus.MustRegister(temp)
+	//
+	//var i int
+	//go func() {
+	//	for {
+	//		i++
+	//		// 每执行2次就添加一次数据指标（记录）
+	//		if i%2 == 0 {
+	//			temp.Inc()
+	//		}
+	//		time.Sleep(time.Second)
+	//	}
+	//}()
+	//
+	//// 对prometheus提供一个监听的接口，接口路径与配置中的对应
+	//http.Handle("/metrics", promhttp.Handler())
+	//
+	//fmt.Println(http.ListenAndServe(":1234", nil))
 }

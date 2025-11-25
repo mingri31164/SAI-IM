@@ -1,0 +1,7 @@
+# 主机
+server.host: '0.0.0.0'
+server.port: 5601
+server.shutdownTimeout: '5s'
+elasticsearch.hosts: ['http://elasticsearch:9200'] #🔥 此处为 elasticsearch 容器的名称
+monitoring.ui.container.elasticsearch.enabled: true
+i18n.localep: "zh-CN"

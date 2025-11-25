@@ -178,7 +178,7 @@ services:
       - 'discovery.type=single-node'
       - 'ES_JAVA_OPTS=-Xms1024m -Xmx1024m'
     networks:
-      easy-chat:
+      sai-im:
 
   kibana:
     image: kibana:7.17.4
@@ -196,7 +196,28 @@ services:
     depends_on:
       - elasticsearch
     networks:
-      easy-chat:
+      sai-im:
+
+  logstash:
+    image: logstash:7.17.4
+    container_name: logstash
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - ./components/mysql/data/c9d9e4253b72-slow.log:/var/logs/mysql-slow.log
+      - ./components/apisix/logs:/var/logs/apisix
+      - ./components/logstash/pipeline:/usr/share/logstash/pipeline
+    ports:
+      - '5044:5044'
+      - '50000:50000/tcp'
+      - '50000:50000/udp'
+      - '9600:9600'
+    links:
+      - elasticsearch
+    depends_on:
+      - elasticsearch
+    networks:
+      sai-im:
 
 networks:
   sai-im:

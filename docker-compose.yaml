@@ -206,6 +206,7 @@ services:
       - /etc/localtime:/etc/localtime
       - ./components/mysql/data/c9d9e4253b72-slow.log:/var/logs/mysql-slow.log
       - ./components/apisix/logs:/var/logs/apisix
+      #🔥 注意配置路径
       - ./components/logstash/pipeline:/usr/share/logstash/pipeline
     ports:
       - '5044:5044'
@@ -225,6 +226,7 @@ services:
     environment:
       TZ: Asia/Shanghai
     volumes:
+      #🔥 注意配置路径
       - ./components/prometheus.yml/config/prometheus.yml.yml:/etc/prometheus.yml/prometheus.yml.yml
       - ./components/prometheus.yml/data:/prometheus.yml
     command:
@@ -234,6 +236,24 @@ services:
     user: root
     ports:
       - 9090:9090
+    networks:
+      sai-im:
+
+  #查看prometheus监控数据 - Grafana to view Prometheus monitoring data
+  grafana: # 初始账号密码都为admin
+    image: grafana/grafana
+    volumes:
+      #🔥 注意配置路径
+      - ./components/grafana/config/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - ./components/grafana/data:/var/lib/grafana
+    container_name: grafana
+    ports:
+      - "3001:3000"
+      - 10007:10007
+    depends_on:
+      - prometheus
+    privileged: true
+    user: root
     networks:
       sai-im:
 

@@ -1,0 +1,31 @@
+#🚀为什么不用logstash采集日志而改用filebeat：
+#      1、logstash是由JAVA所开发的，它的启动过程呢，是比较缓慢的，并且它所需要的资源呢，也是比较多的，
+#         如果把他放到我们自己实际运行的程序中，两者一起在同一个服务器中运行的话，那么势必对服务器会造成资源的竞争，
+#         那么这样的话，它就会弊大于利，此时呢，还不如不要这个功能。因为这个功能很明显，它会影响到整个程序的运行，
+#         为此呢，我们在这种问题的基础上面提出的一个需求，需要一个更加轻量级的采集工具。此时，beats系列就出来了，
+#         beats这一套系列的话，它是针对各个日志信息采集的一套方案。或者是一套软件，它可以采集像日志文件，也可以采集系统的运行数据都是可以的，
+#         目前我们所讲的是针对日志采集的beat，它采集之后将信息推送给logstash，
+#         🔥因为beat是轻量级，所以它其实是牺牲了对于数据的处理，数据处理的话，它需要通过logstash来进行处理
+
+# 输入
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /root/easy-chat/components/apisix/logs/access.log
+    # 如果值为ture，那么fields存储在输出文档的顶级位置
+    fields_under_root: true #字段优先级为顶级
+    fields: #读取日志增加type字段，提供给logstash.conf去使用
+      type: apisix
+
+# 输出
+# 测试时可先推送给本地控制台，验证当前采集的信息是正确的
+
+# 控制台输出
+#output.console:
+#  pretty: true
+#  enable: true
+
+# logstash输出
+output.logstash:
+  hosts: ["192.168.117.80:5044"]

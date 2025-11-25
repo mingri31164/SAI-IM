@@ -88,7 +88,7 @@ plugins:                          # plugin list (sorted in alphabetical order)
   # - log-rotate
   # - node-status
   - openid-connect
-  - prometheus
+  - prometheus.yml
   - proxy-cache
   - proxy-mirror
   - proxy-rewrite

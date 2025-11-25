@@ -12,7 +12,7 @@ filebeat.inputs:
   - type: log
     enabled: true
     paths:
-      - /root/easy-chat/components/apisix/logs/access.log
+      - /root/sai-im/components/apisix/logs/access.log
     # 如果值为ture，那么fields存储在输出文档的顶级位置
     fields_under_root: true #字段优先级为顶级
     fields: #读取日志增加type字段，提供给logstash.conf去使用

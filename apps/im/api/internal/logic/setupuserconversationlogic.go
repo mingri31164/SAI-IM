@@ -1,6 +1,7 @@
 package logic
 
 import (
+	"SAI-IM/apps/im/rpc/im"
 	"context"
 
 	"SAI-IM/apps/im/api/internal/svc"
@@ -25,7 +26,14 @@ func NewSetUpUserConversationLogic(ctx context.Context, svcCtx *svc.ServiceConte
 }
 
 func (l *SetUpUserConversationLogic) SetUpUserConversation(req *types.SetUpUserConversationReq) (resp *types.SetUpUserConversationResp, err error) {
-	// todo: add your logic here and delete this line
+	_, err = l.svcCtx.SetUpUserConversation(l.ctx, &im.SetUpUserConversationReq{
+		SendId:   req.SendId,
+		RecvId:   req.RecvId,
+		ChatType: req.ChatType,
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	return
+	return &types.SetUpUserConversationResp{}, nil
 }

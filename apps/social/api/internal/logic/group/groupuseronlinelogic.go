@@ -28,7 +28,7 @@ func NewGroupUserOnlineLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 
 func (l *GroupUserOnlineLogic) GroupUserOnline(req *types.GroupUserOnlineReq) (resp *types.GroupUserOnlineResp, err error) {
 	// 获取当前群组的所有成员信息
-	groupUsers, err := l.svcCtx.GroupUsers(l.ctx, &socialclient.GroupUsersReq{
+	groupUsers, err := l.svcCtx.Social.GroupUsers(l.ctx, &socialclient.GroupUsersReq{
 		GroupId: req.GroupId, // 群组ID
 	})
 	if err != nil {

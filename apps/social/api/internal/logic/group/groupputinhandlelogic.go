@@ -6,6 +6,7 @@ import (
 	"SAI-IM/pkg/constants"
 	"SAI-IM/pkg/ctxdata"
 	"context"
+	"strconv"
 
 	"SAI-IM/apps/social/api/internal/svc"
 	"SAI-IM/apps/social/api/internal/types"
@@ -27,11 +28,17 @@ func NewGroupPutInHandleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 	}
 }
 
-func (l *GroupPutInHandleLogic) GroupPutInHandle(req *types.GroupPutInHandleRep) (resp *types.GroupPutInHandleResp, err error) {
+func (l *GroupPutInHandleLogic) GroupPutInHandle(req *types.GroupPutInHandleReq) (resp *types.GroupPutInHandleResp, err error) {
 	uid := ctxdata.GetUId(l.ctx)
 
+	// 转换GroupReqId从string到int32
+	groupReqId, err := strconv.ParseInt(req.GroupReqId, 10, 32)
+	if err != nil {
+		return nil, err
+	}
+
 	res, err := l.svcCtx.Social.GroupPutInHandle(l.ctx, &socialclient.GroupPutInHandleReq{
-		GroupReqId:   req.GroupReqId,
+		GroupReqId:   int32(groupReqId),
 		GroupId:      req.GroupId,
 		HandleUid:    uid,
 		HandleResult: req.HandleResult,

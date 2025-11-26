@@ -53,7 +53,6 @@ func (l *GroupUserListLogic) GroupUserList(req *types.GroupUserListReq) (resp *t
 	for _, v := range groupUsers.List {
 
 		member := &types.GroupMembers{
-			Id:        int64(v.Id),
 			GroupId:   v.GroupId,
 			UserId:    v.UserId,
 			RoleLevel: int(v.RoleLevel),

@@ -48,7 +48,7 @@ func (l *FriendsOnlineLogic) FriendsOnline(req *types.FriendsOnlineReq) (resp *t
 	// 提取好友ID列表
 	uids := make([]string, 0, len(friendList.List))
 	for _, friend := range friendList.List {
-		uids = append(uids, friend.UserId)
+		uids = append(uids, friend.FriendUid)
 	}
 
 	// 查询Redis缓存中的在线用户

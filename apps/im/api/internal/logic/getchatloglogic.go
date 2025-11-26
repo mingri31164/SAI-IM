@@ -1,7 +1,9 @@
 package logic
 
 import (
+	"SAI-IM/apps/im/rpc/im"
 	"context"
+	"github.com/jinzhu/copier"
 
 	"SAI-IM/apps/im/api/internal/svc"
 	"SAI-IM/apps/im/api/internal/types"
@@ -25,7 +27,19 @@ func NewGetChatLogLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetCha
 }
 
 func (l *GetChatLogLogic) GetChatLog(req *types.ChatLogReq) (resp *types.ChatLogResp, err error) {
-	// todo: add your logic here and delete this line
+	data, err := l.svcCtx.GetChatLog(l.ctx, &im.GetChatLogReq{
+		ConversationId: req.ConversationId,
+		StartSendTime:  req.StartSendTime,
+		EndSendTime:    req.EndSendTime,
+		Count:          req.Count,
+		MsgId:          req.MsgId,
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	return
+	var respList []*types.ChatLog
+	copier.Copy(&respList, data.List)
+
+	return &types.ChatLogResp{List: respList}, nil
 }

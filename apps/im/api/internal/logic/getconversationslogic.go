@@ -1,7 +1,10 @@
 package logic
 
 import (
+	"SAI-IM/apps/im/rpc/im"
+	"SAI-IM/pkg/ctxdata"
 	"context"
+	"github.com/jinzhu/copier"
 
 	"SAI-IM/apps/im/api/internal/svc"
 	"SAI-IM/apps/im/api/internal/types"
@@ -25,7 +28,17 @@ func NewGetConversationsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *GetConversationsLogic) GetConversations(req *types.GetConversationsReq) (resp *types.GetConversationsResp, err error) {
-	// todo: add your logic here and delete this line
+	uid := ctxdata.GetUId(l.ctx)
 
-	return
+	data, err := l.svcCtx.GetConversations(l.ctx, &im.GetConversationsReq{
+		UserId: uid,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	var conversationList = make(map[string]*types.Conversation)
+	copier.Copy(&conversationList, data.ConversationList)
+
+	return &types.GetConversationsResp{ConversationList: conversationList}, nil
 }

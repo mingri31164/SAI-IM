@@ -1,4 +1,4 @@
-# SAI-IM - Secure & Advanced Instant Messaging System
+<h1 align="center">SAI-IM</h1>
 
 <p align="center">
   <strong>基于微服务架构的高性能即时通讯系统</strong>
@@ -6,10 +6,10 @@
 
 <p align="center">
   <a href="#核心特性">核心特性</a> •
-  <a href="#技术架构">技术架构</a> •
+  <a href="#技术栈">技术栈</a> •
   <a href="#项目结构">项目结构</a> •
   <a href="#快速开始">快速开始</a> •
-  <a href="#详细设计">详细设计</a>
+  <a href="#核心设计与实现">核心设计与实现</a>
 </p>
 
 ---
